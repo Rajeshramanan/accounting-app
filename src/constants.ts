@@ -1,4 +1,4 @@
-import { BusinessProfile, Ledger, StockItem } from './types';
+import type { BusinessProfile, Ledger, StockItem } from './types';
 
 export const BUSINESS_PROFILE: BusinessProfile = {
   name: "RS Traders & Co",
