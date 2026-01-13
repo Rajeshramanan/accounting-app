@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BusinessProfile } from '../types';
+import type { BusinessProfile } from '../types';
 import { Plus, Trash2, Save } from 'lucide-react';
 
 interface ConfigurationProps {

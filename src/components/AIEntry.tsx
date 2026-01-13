@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { analyzeTransaction } from '../services/geminiService';
-import { AIAnalysisResponse, Ledger, StockItem } from '../types';
+import type { AIAnalysisResponse, Ledger, StockItem } from '../types';
 import { SAMPLE_PROMPTS } from '../constants';
 
 interface AIEntryProps {

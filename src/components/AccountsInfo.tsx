@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ledger } from '../types';
+import type { Ledger } from '../types';
 
 interface AccountsInfoProps {
   ledgers: Ledger[];

@@ -1,6 +1,6 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Ledger, StockItem, Voucher } from '../types';
+import type { Ledger, StockItem, Voucher } from '../types';
 
 interface DashboardProps {
   ledgers: Ledger[];
