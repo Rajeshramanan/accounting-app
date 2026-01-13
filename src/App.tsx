@@ -72,7 +72,7 @@ const App: React.FC = () => {
 
   const renderView = () => {
     switch (currentView) {
-      case 'dashboard': return <Dashboard ledgers={ledgers} stock={stock} vouchers={vouchers} isDarkMode={isDarkMode} />;
+      case 'dashboard': return <Dashboard ledgers={ledgers} stock={stock} isDarkMode={isDarkMode} />;
       case 'vouchers': return <AIEntry ledgers={ledgers} stock={stock} onSaveVoucher={handleSaveVoucher} />;
       case 'daybook': 
       case 'inventory': 
