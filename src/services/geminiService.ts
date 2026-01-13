@@ -1,8 +1,10 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import type { Ledger, StockItem, AIAnalysisResponse } from '../types';
 
-
-const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
+// FIX: Use Vite's import.meta.env for browser compatibility.
+// process.env will cause the app to crash.
+const apiKey = (import.meta as any).env.VITE_API_KEY;
+const ai = new GoogleGenAI({ apiKey: apiKey || '' });
 
 export const analyzeTransaction = async (
   inputText: string, 

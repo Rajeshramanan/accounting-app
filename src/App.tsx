@@ -1,25 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import AIEntry from './components/AIEntry';
 import Reports from './components/Reports';
 import Configuration from './components/Configuration';
 import AccountsInfo from './components/AccountsInfo';
-import { INITIAL_LEDGERS, INITIAL_STOCK, BUSINESS_PROFILE } from './constants';
+import { BUSINESS_PROFILE } from './constants';
 import type { Ledger, StockItem, Voucher, AIAnalysisResponse, BusinessProfile } from './types';
 import { v4 as uuidv4 } from 'uuid';
-import { Menu, Moon, Sun } from 'lucide-react';
+import { Menu, Moon, Sun, Cloud, CloudOff, Loader2 } from 'lucide-react';
+import { dataService } from './services/dataService';
+import { isCloudEnabled } from './services/supabaseClient';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState('dashboard');
-  const [ledgers, setLedgers] = useState<Ledger[]>(INITIAL_LEDGERS);
-  const [stock, setStock] = useState<StockItem[]>(INITIAL_STOCK);
+  const [loading, setLoading] = useState(true);
+  
+  const [ledgers, setLedgers] = useState<Ledger[]>([]);
+  const [stock, setStock] = useState<StockItem[]>([]);
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
   const [businessProfile, setBusinessProfile] = useState<BusinessProfile>(BUSINESS_PROFILE);
+  
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
-  const handleSaveVoucher = (analysis: AIAnalysisResponse) => {
+  // Load Data on Mount
+  useEffect(() => {
+    const loadData = async () => {
+        setLoading(true);
+        const data = await dataService.getInitialData();
+        setLedgers(data.ledgers);
+        setStock(data.stock);
+        setVouchers(data.vouchers);
+        setBusinessProfile(data.profile);
+        
+        if (data.isCloudEmpty && isCloudEnabled) {
+            // Seed initial data to cloud if it's a fresh connection
+            await dataService.seedCloudIfEmpty(data.ledgers, data.stock, data.profile);
+        }
+        setLoading(false);
+    };
+    loadData();
+  }, []);
+
+  const handleSaveVoucher = async (analysis: AIAnalysisResponse) => {
     const newVoucher: Voucher = {
       id: uuidv4(),
       number: `V-${(vouchers.length + 1).toString().padStart(4, '0')}`,
@@ -36,13 +60,12 @@ const App: React.FC = () => {
       summaryForOwner: analysis.summary
     };
 
-    setVouchers(prev => [newVoucher, ...prev]);
-
+    // Calculate updates
     const updatedLedgers = [...ledgers];
     analysis.voucherData.entries.forEach(entry => {
       const ledgerIndex = updatedLedgers.findIndex(l => l.name === entry.ledgerName);
       if (ledgerIndex !== -1) {
-        const ledger = updatedLedgers[ledgerIndex];
+        const ledger = { ...updatedLedgers[ledgerIndex] }; // Clone
         if (['Current Assets', 'Expenses', 'Tax', 'Purchase'].includes(ledger.group) || ledger.name.includes('Purchase')) {
            if (entry.type === 'Dr') ledger.balance += entry.amount;
            else ledger.balance -= entry.amount;
@@ -50,29 +73,52 @@ const App: React.FC = () => {
            if (entry.type === 'Cr') ledger.balance += entry.amount;
            else ledger.balance -= entry.amount;
         }
+        updatedLedgers[ledgerIndex] = ledger;
       }
     });
-    setLedgers(updatedLedgers);
 
+    const updatedStock = [...stock];
     if (analysis.stockUpdate) {
-      const updatedStock = [...stock];
       const stockIndex = updatedStock.findIndex(s => s.name === analysis.stockUpdate?.itemName);
       if (stockIndex !== -1) {
+        updatedStock[stockIndex] = { ...updatedStock[stockIndex] }; // Clone
         updatedStock[stockIndex].quantity += analysis.stockUpdate.quantityChange;
-        setStock(updatedStock);
       }
     }
+
+    // Optimistic Update
+    setVouchers(prev => [newVoucher, ...prev]);
+    setLedgers(updatedLedgers);
+    setStock(updatedStock);
+
+    // Persist
+    await dataService.saveVoucher(newVoucher, updatedLedgers, updatedStock);
 
     setCurrentView('daybook');
   };
 
-  const handleUpdateLedger = (updatedLedger: Ledger) => {
-    setLedgers(prev => prev.map(l => l.id === updatedLedger.id ? updatedLedger : l));
+  const handleUpdateLedger = async (updatedLedger: Ledger) => {
+    const newLedgers = await dataService.updateLedger(updatedLedger);
+    setLedgers(newLedgers);
+  };
+
+  const handleUpdateProfile = async (newProfile: BusinessProfile) => {
+      setBusinessProfile(newProfile);
+      await dataService.saveProfile(newProfile);
   };
 
   const renderView = () => {
+    if (loading) {
+        return (
+            <div className="h-full flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
+                <Loader2 className="animate-spin mb-2" size={32} />
+                <span>Loading Accounting Data...</span>
+            </div>
+        );
+    }
+
     switch (currentView) {
-      case 'dashboard': return <Dashboard ledgers={ledgers} stock={stock} isDarkMode={isDarkMode} />;
+      case 'dashboard': return <Dashboard ledgers={ledgers} stock={stock} vouchers={vouchers} isDarkMode={isDarkMode} />;
       case 'vouchers': return <AIEntry ledgers={ledgers} stock={stock} onSaveVoucher={handleSaveVoucher} />;
       case 'daybook': 
       case 'inventory': 
@@ -81,7 +127,7 @@ const App: React.FC = () => {
       case 'accounts': 
         return <AccountsInfo ledgers={ledgers} onUpdateLedger={handleUpdateLedger} />;
       case 'config':
-        return <Configuration profile={businessProfile} onUpdate={setBusinessProfile} />;
+        return <Configuration profile={businessProfile} onUpdate={handleUpdateProfile} />;
       default: return <div className="p-8 text-center text-slate-400">Configuration Module Not Loaded</div>;
     }
   };
@@ -133,6 +179,11 @@ const App: React.FC = () => {
                   </div>
               </div>
               <div className="flex items-center space-x-4">
+                 {/* Connection Status */}
+                 <div className="flex items-center space-x-1" title={isCloudEnabled ? "Cloud Sync Active" : "Local Storage Only"}>
+                    {isCloudEnabled ? <Cloud size={14} className="text-green-300" /> : <CloudOff size={14} className="text-red-300" />}
+                 </div>
+
                 <div className="text-[10px] md:text-xs font-mono hidden md:block">
                     {businessProfile.name} [{businessProfile.financialYear.split('–')[0].slice(-2)}-{businessProfile.financialYear.split('–')[1].slice(-2)}]
                 </div>

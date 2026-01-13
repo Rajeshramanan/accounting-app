@@ -205,7 +205,6 @@ const Reports: React.FC<ReportsProps> = ({ view, vouchers, ledgers, stock }) => 
   if (view === 'daybook') return <DayBook />;
   if (view === 'inventory') return <StockSummary />;
   if (view === 'reports') return <FinancialReports />;
-  if (view === 'ledger') return <LedgerSummary />;
   return null;
 };
 

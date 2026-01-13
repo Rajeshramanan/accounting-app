@@ -1,14 +1,15 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import type { Ledger, StockItem } from '../types';
+import type { Ledger, StockItem, Voucher } from '../types';
 
 interface DashboardProps {
   ledgers: Ledger[];
   stock: StockItem[];
+  vouchers: Voucher[];
   isDarkMode?: boolean;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ ledgers, stock, isDarkMode = false }) => {
+const Dashboard: React.FC<DashboardProps> = ({ ledgers, stock, vouchers, isDarkMode = false }) => {
   const cashBalance = ledgers.find(l => l.name === 'Cash')?.balance || 0;
   const bankBalance = ledgers.find(l => l.name === 'Bank Account')?.balance || 0;
   const sales = Math.abs(ledgers.find(l => l.name === 'Sales Account')?.balance || 0);
