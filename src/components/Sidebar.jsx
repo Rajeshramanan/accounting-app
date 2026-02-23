@@ -1,32 +1,17 @@
 import React from 'react';
 import { X } from 'lucide-react';
-
-interface SidebarProps {
-  currentView: string;
-  onChangeView: (view: string) => void;
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, isOpen, onClose }) => {
-  const menuItems = [
-    { id: 'dashboard', label: 'Dashboard' },
-    { id: 'accounts', label: 'Accounts Info' },
-    { id: 'vouchers', label: 'Voucher Entry' },
-    { id: 'inventory', label: 'Inventory Info' },
-    { id: 'reports', label: 'Reports' },
-    { id: 'config', label: 'Configuration' },
-  ];
-
-  return (
-    <>
+const Sidebar = ({ currentView, onChangeView, isOpen, onClose }) => {
+    const menuItems = [
+        { id: 'dashboard', label: 'Dashboard' },
+        { id: 'accounts', label: 'Accounts Info' },
+        { id: 'vouchers', label: 'Voucher Entry' },
+        { id: 'inventory', label: 'Inventory Info' },
+        { id: 'reports', label: 'Reports' },
+        { id: 'config', label: 'Configuration' },
+    ];
+    return (<>
       {/* Mobile Overlay */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
-          onClick={onClose}
-        />
-      )}
+      {isOpen && (<div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={onClose}/>)}
 
       {/* Sidebar Container */}
       <div className={`
@@ -38,27 +23,19 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, isOpen, on
           <span className="font-bold text-xs uppercase tracking-wider text-yellow-400 dark:text-accounting-dark-accent">Menu</span>
           {/* Mobile Close Button */}
           <button onClick={onClose} className="md:hidden text-gray-400 hover:text-white">
-            <X size={16} />
+            <X size={16}/>
           </button>
         </div>
         
         <nav className="flex-1 overflow-y-auto py-1">
           {menuItems.map((item) => {
             const isActive = currentView === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => onChangeView(item.id)}
-                className={`w-full text-left px-3 py-3 md:py-1.5 text-sm md:text-xs font-medium transition-colors border-b border-gray-700 dark:border-[#222] ${
-                  isActive
+            return (<button key={item.id} onClick={() => onChangeView(item.id)} className={`w-full text-left px-3 py-3 md:py-1.5 text-sm md:text-xs font-medium transition-colors border-b border-gray-700 dark:border-[#222] ${isActive
                     ? 'bg-[#fbbf24] text-black font-bold dark:bg-transparent dark:text-accounting-dark-accent dark:border-l-4 dark:border-l-accounting-dark-accent dark:pl-2'
-                    : 'text-gray-300 hover:bg-[#4a5568] hover:text-white dark:text-[#E0E0E0] dark:hover:bg-[#252525]'
-                }`}
-              >
+                    : 'text-gray-300 hover:bg-[#4a5568] hover:text-white dark:text-[#E0E0E0] dark:hover:bg-[#252525]'}`}>
                 {item.label}
-              </button>
-            );
-          })}
+              </button>);
+        })}
         </nav>
 
         <div className="p-2 border-t border-gray-600 dark:border-accounting-dark-border bg-[#1a202c] dark:bg-[#121212] shrink-0">
@@ -68,8 +45,6 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, isOpen, on
           </div>
         </div>
       </div>
-    </>
-  );
+    </>);
 };
-
 export default Sidebar;

@@ -1,26 +1,14 @@
 import React from 'react';
-import type { Ledger } from '../types';
-
-interface AccountsInfoProps {
-  ledgers: Ledger[];
-  onUpdateLedger: (updatedLedger: Ledger) => void;
-}
-
-const AccountsInfo: React.FC<AccountsInfoProps> = ({ ledgers, onUpdateLedger }) => {
-
-  const handleAmountChange = (ledger: Ledger, amountStr: string) => {
-    const amount = parseFloat(amountStr) || 0;
-    onUpdateLedger({ ...ledger, balance: amount });
-  };
-
-  const handleTypeChange = (ledger: Ledger, type: 'Dr' | 'Cr') => {
-    onUpdateLedger({ ...ledger, balanceType: type });
-  };
-
-  const groups = ['Capital', 'Current Assets', 'Current Liabilities', 'Income', 'Expenses', 'Tax'];
-
-  return (
-    <div className="p-2 h-full flex flex-col overflow-hidden bg-[#e8e8e8] dark:bg-accounting-dark-bg transition-colors">
+const AccountsInfo = ({ ledgers, onUpdateLedger }) => {
+    const handleAmountChange = (ledger, amountStr) => {
+        const amount = parseFloat(amountStr) || 0;
+        onUpdateLedger({ ...ledger, balance: amount });
+    };
+    const handleTypeChange = (ledger, type) => {
+        onUpdateLedger({ ...ledger, balanceType: type });
+    };
+    const groups = ['Capital', 'Current Assets', 'Current Liabilities', 'Income', 'Expenses', 'Tax'];
+    return (<div className="p-2 h-full flex flex-col overflow-hidden bg-[#e8e8e8] dark:bg-accounting-dark-bg transition-colors">
       <div className="bg-[#f0f0f0] dark:bg-accounting-dark-panel border border-gray-500 dark:border-accounting-dark-border p-2 mb-2 shrink-0">
           <div className="text-xs font-bold text-black dark:text-accounting-dark-text uppercase border-b border-gray-400 dark:border-accounting-dark-border pb-1 mb-1">
               Ledger Configuration & Opening Balances
@@ -43,47 +31,32 @@ const AccountsInfo: React.FC<AccountsInfoProps> = ({ ledgers, onUpdateLedger }) 
                 </thead>
                 <tbody>
                     {groups.map(group => {
-                        const groupLedgers = ledgers.filter(l => l.group === group);
-                        if (groupLedgers.length === 0) return null;
-                        return (
-                            <React.Fragment key={group}>
+            const groupLedgers = ledgers.filter(l => l.group === group);
+            if (groupLedgers.length === 0)
+                return null;
+            return (<React.Fragment key={group}>
                                 <tr className="bg-gray-100 dark:bg-[#252525]">
                                     <td colSpan={4} className="border border-gray-300 dark:border-accounting-dark-border px-2 py-1 font-bold text-gray-700 dark:text-accounting-dark-muted uppercase">{group}</td>
                                 </tr>
-                                {groupLedgers.map(ledger => (
-                                    <tr key={ledger.id} className="hover:bg-yellow-50 dark:hover:bg-[#333]">
+                                {groupLedgers.map(ledger => (<tr key={ledger.id} className="hover:bg-yellow-50 dark:hover:bg-[#333]">
                                         <td className="border border-gray-300 dark:border-accounting-dark-border px-2 py-1 font-medium text-black dark:text-accounting-dark-text">{ledger.name}</td>
                                         <td className="border border-gray-300 dark:border-accounting-dark-border px-2 py-1 text-gray-500 dark:text-accounting-dark-muted">{ledger.group}</td>
                                         <td className="border border-gray-300 dark:border-accounting-dark-border px-2 py-1 text-right p-0">
-                                            <input 
-                                                type="number"
-                                                className="w-full h-full text-right px-1 py-1 focus:bg-yellow-100 dark:focus:bg-[#444] outline-none bg-transparent text-black dark:text-accounting-dark-text"
-                                                value={ledger.balance}
-                                                onChange={(e) => handleAmountChange(ledger, e.target.value)}
-                                                onFocus={(e) => e.target.select()}
-                                            />
+                                            <input type="number" className="w-full h-full text-right px-1 py-1 focus:bg-yellow-100 dark:focus:bg-[#444] outline-none bg-transparent text-black dark:text-accounting-dark-text" value={ledger.balance} onChange={(e) => handleAmountChange(ledger, e.target.value)} onFocus={(e) => e.target.select()}/>
                                         </td>
                                         <td className="border border-gray-300 dark:border-accounting-dark-border px-2 py-1 text-center p-0">
-                                            <select 
-                                                className="w-full h-full text-center bg-transparent outline-none cursor-pointer text-black dark:text-accounting-dark-text dark:bg-accounting-dark-panel"
-                                                value={ledger.balanceType}
-                                                onChange={(e) => handleTypeChange(ledger, e.target.value as 'Dr' | 'Cr')}
-                                            >
+                                            <select className="w-full h-full text-center bg-transparent outline-none cursor-pointer text-black dark:text-accounting-dark-text dark:bg-accounting-dark-panel" value={ledger.balanceType} onChange={(e) => handleTypeChange(ledger, e.target.value)}>
                                                 <option value="Dr">Dr</option>
                                                 <option value="Cr">Cr</option>
                                             </select>
                                         </td>
-                                    </tr>
-                                ))}
-                            </React.Fragment>
-                        );
-                    })}
+                                    </tr>))}
+                            </React.Fragment>);
+        })}
                 </tbody>
             </table>
           </div>
       </div>
-    </div>
-  );
+    </div>);
 };
-
 export default AccountsInfo;
