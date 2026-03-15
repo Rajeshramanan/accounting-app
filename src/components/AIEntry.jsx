@@ -65,6 +65,7 @@ const AIEntry = ({ ledgers, stock, onSaveVoucher }) => {
     return (<div className="p-2 h-full flex flex-col overflow-hidden bg-[#e8e8e8] dark:bg-accounting-dark-bg transition-colors">
       
       {/* Input Section */}
+      {!analysis && (
       <div className="bg-[#f0f0f0] dark:bg-accounting-dark-panel p-2 border border-gray-500 dark:border-accounting-dark-border mb-2 shrink-0">
         <div className="flex items-center justify-between mb-1">
              <label className="text-xs font-bold text-black dark:text-accounting-dark-text uppercase">Transaction Narrative / Upload</label>
@@ -95,6 +96,7 @@ const AIEntry = ({ ledgers, stock, onSaveVoucher }) => {
         
         {error && <div className="text-red-600 dark:text-red-400 text-xs mt-1 font-bold">Error: {error}</div>}
       </div>
+      )}
 
       {/* Classic Tally ERP Voucher View Section */}
       {analysis && (<div className="flex-1 bg-[#FFFFE6] dark:bg-[#1a1a14] flex flex-col overflow-hidden border-2 border-[#005a3c] dark:border-[#008a5c] shadow-lg text-black dark:text-[#E0E0E0] font-sans">
