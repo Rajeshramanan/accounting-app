@@ -54,7 +54,7 @@ const App = () => {
         };
         loadData();
     }, [isAdminRoute]);
-    const handleSaveVoucher = async (analysis) => {
+    const handleSaveVoucher = async (analysis, imageData) => {
         const newVoucher = {
             id: uuidv4(),
             number: `V-${(vouchers.length + 1).toString().padStart(4, '0')}`,
@@ -68,7 +68,9 @@ const App = () => {
             aiVerificationStatus: analysis.verification.status,
             aiVerificationMessage: analysis.verification.message,
             aiExplanation: analysis.explanation,
-            summaryForOwner: analysis.summary
+            summaryForOwner: analysis.summary,
+            receiptImage: imageData ? imageData.data : null,
+            receiptImageMimeType: imageData ? imageData.mimeType : null
         };
         // Calculate updates
         const updatedLedgers = [...ledgers];

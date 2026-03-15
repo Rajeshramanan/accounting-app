@@ -37,7 +37,8 @@ export const analyzeTransaction = async (inputText, ledgers, stock, imagePart, r
     4. Determine Debit/Credit logic based on Double Entry System.
     5. Classify B2B (if GST/Company mentioned) vs B2C.
     6. Verify for errors (e.g., negative stock, mismatched amounts).
-    7. CHECK FOR POTENTIAL DUPLICATES: Compare the extracted transaction against the 'Recently Saved Transactions'. If it appears to be a duplicate (same date, similar amount, same ledgers, same narration intent), set 'verification.status' to 'Warning' and 'verification.message' to 'Potential Duplicate Entry detected based on recent vouchers.'
+    7. CHECK FOR POTENTIAL DUPLICATES: Compare the extracted transaction against the 'Recently Saved Transactions'. If it appears to be a duplicate (same date, similar amount, same ledgers, same narration intent), set 'verification.status' to 'Error' and 'verification.message' to 'DUPLICATE ENTRY DETECTED based on recent vouchers.'
+    8. CHECK NATURE OF BUSINESS: Verify if the transaction is related to the Nature of Business (Trading/Accounting). If entirely unrelated (e.g. personal vacation, movie tickets), set 'verification.status' to 'Warning' and 'verification.message' to 'Potentially unrelated business expense.'
     
     Output JSON format strictly matching the schema.
   `;

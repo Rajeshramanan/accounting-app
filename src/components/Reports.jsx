@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 const TableHeader = ({ children }) => (<th className="px-2 py-1 border border-gray-500 dark:border-accounting-dark-border bg-[#e0e0e0] dark:bg-accounting-dark-header text-black dark:text-accounting-dark-text font-bold text-xs text-left whitespace-nowrap">
     {children}
   </th>);
@@ -6,7 +6,9 @@ const TableCell = ({ children, className, align = 'left' }) => (<td className={`
     {children}
   </td>);
 const Reports = ({ view, vouchers, ledgers, stock }) => {
-    const DayBook = () => (<div className="p-2 h-full flex flex-col">
+    const [viewImage, setViewImage] = useState(null);
+
+    const DayBook = () => (<div className="p-2 h-full flex flex-col relative">
         <div className="mb-2 text-xs font-bold text-black dark:text-accounting-dark-text uppercase border-b border-black dark:border-accounting-dark-border pb-1 shrink-0">
             Day Book Register [1-Apr-2024 to 31-Mar-2025]
         </div>
@@ -21,6 +23,7 @@ const Reports = ({ view, vouchers, ledgers, stock }) => {
                             <TableHeader>Vch No</TableHeader>
                             <TableHeader>Debit (₹)</TableHeader>
                             <TableHeader>Credit (₹)</TableHeader>
+                            <TableHeader>Attachment</TableHeader>
                         </tr>
                     </thead>
                     <tbody>
@@ -36,12 +39,41 @@ const Reports = ({ view, vouchers, ledgers, stock }) => {
                                         <TableCell>{v.number}</TableCell>
                                         <TableCell align="right">{drEntry?.amount.toFixed(2)}</TableCell>
                                         <TableCell align="right"></TableCell>
+                                        <TableCell align="center">
+                                            {v.receiptImage && (
+                                                <button 
+                                                    onClick={() => setViewImage({ data: v.receiptImage, mimeType: v.receiptImageMimeType || 'image/jpeg' })}
+                                                    className="text-blue-600 dark:text-blue-400 font-bold hover:underline text-[10px] bg-[#f0f0f0] dark:bg-[#333] px-2 py-1 rounded"
+                                                >
+                                                    📄 View
+                                                </button>
+                                            )}
+                                        </TableCell>
                                     </tr>);
         }))}
                     </tbody>
                 </table>
             </div>
         </div>
+        
+        {/* Image Modal */}
+        {viewImage && (
+            <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+                <div className="bg-white dark:bg-accounting-dark-panel p-2 flex flex-col max-w-full max-h-full border border-gray-400 shadow-2xl">
+                    <div className="flex justify-between items-center mb-2 pb-2 border-b border-gray-300 dark:border-accounting-dark-border">
+                        <span className="font-bold text-sm text-black dark:text-accounting-dark-text">Voucher Attachment</span>
+                        <button onClick={() => setViewImage(null)} className="text-red-600 font-bold hover:text-red-800 text-lg leading-none">&times;</button>
+                    </div>
+                    <div className="flex-1 overflow-auto bg-[#e0e0e0] dark:bg-[#121212] p-2 flex items-center justify-center">
+                        <img 
+                            src={`data:${viewImage.mimeType};base64,${viewImage.data}`} 
+                            alt="Receipt Attachment" 
+                            className="max-w-full max-h-[70vh] object-contain"
+                        />
+                    </div>
+                </div>
+            </div>
+        )}
     </div>);
     const StockSummary = () => (<div className="p-2 h-full flex flex-col">
         <div className="mb-2 text-xs font-bold text-black dark:text-accounting-dark-text uppercase border-b border-black dark:border-accounting-dark-border pb-1 shrink-0">Stock Summary</div>

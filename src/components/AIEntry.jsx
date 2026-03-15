@@ -56,7 +56,7 @@ const AIEntry = ({ ledgers, stock, onSaveVoucher }) => {
     };
     const handleSave = () => {
         if (analysis) {
-            onSaveVoucher(analysis);
+            onSaveVoucher(analysis, selectedImage);
             setAnalysis(null);
             setInput('');
             clearImage();
@@ -115,7 +115,11 @@ const AIEntry = ({ ledgers, stock, onSaveVoucher }) => {
              </div>
              <div>
                 <label className="block text-gray-600 dark:text-accounting-dark-muted font-bold mb-0.5">Status</label>
-                <div className={`px-1 py-0.5 font-bold text-center border ${analysis.verification.status === 'Verified' ? 'bg-green-100 dark:bg-green-900/30 border-green-500 dark:border-green-600 text-green-800 dark:text-green-300' : 'bg-yellow-100 dark:bg-yellow-900/30 border-yellow-500 dark:border-yellow-600 text-yellow-800 dark:text-yellow-300'}`}>
+                <div className={`px-1 py-0.5 font-bold text-center border ${
+                    analysis.verification.status === 'Verified' ? 'bg-green-100 dark:bg-green-900/30 border-green-500 dark:border-green-600 text-green-800 dark:text-green-300' 
+                    : analysis.verification.status === 'Error' ? 'bg-red-100 dark:bg-red-900/30 border-red-500 dark:border-red-600 text-red-800 dark:text-red-300' 
+                    : 'bg-yellow-100 dark:bg-yellow-900/30 border-yellow-500 dark:border-yellow-600 text-yellow-800 dark:text-yellow-300'
+                }`}>
                     {analysis.verification.status}
                 </div>
              </div>
