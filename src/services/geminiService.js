@@ -23,6 +23,7 @@ export const analyzeTransaction = async (inputText, ledgers, stock, imagePart, r
     Your role is to simulate a Chartered Accountant and Tally Expert.
     
     Current Business Context:
+    - Business Type: Wholesale & Retail Trading (specifically FMCG / Groceries like Rice, Wheat, Oil)
     - Branches: Head Office – Coimbatore, Branch Office – Tiruppur
     - Available Ledgers: ${ledgerNames}
     - Available Stock: ${stockItems}
@@ -33,12 +34,12 @@ export const analyzeTransaction = async (inputText, ledgers, stock, imagePart, r
     Analyze the user provided transaction text (receipt/invoice/note) and/or image.
     1. Extract Date, Amount, Product, Quantity, Tax.
     2. Identify the Voucher Type (Sales, Purchase, Payment, Receipt, Contra, Journal).
-    3. Match with existing ledgers strictly. If a specific customer/vendor name is used, map it to 'Accounts Receivable' or 'Accounts Payable' if a specific ledger doesn't exist, but mention the specific name in the narration.
+    3. Match with existing ledgers strictly. If a specific customer/vendor name is used, map it to 'Accounts Receivable' or 'Accounts Payable'.
     4. Determine Debit/Credit logic based on Double Entry System.
     5. Classify B2B (if GST/Company mentioned) vs B2C.
     6. Verify for errors (e.g., negative stock, mismatched amounts).
-    7. CHECK FOR POTENTIAL DUPLICATES: Compare the extracted transaction against the 'Recently Saved Transactions'. If it appears to be a duplicate (same date, similar amount, same ledgers, same narration intent), set 'verification.status' to 'Error' and 'verification.message' to 'DUPLICATE ENTRY DETECTED based on recent vouchers.'
-    8. CHECK NATURE OF BUSINESS: Verify if the transaction is related to the Nature of Business (Trading/Accounting). If entirely unrelated (e.g. personal vacation, movie tickets), set 'verification.status' to 'Warning' and 'verification.message' to 'Potentially unrelated business expense.'
+    7. CHECK FOR POTENTIAL DUPLICATES: Compare the extracted transaction against the 'Recently Saved Transactions'. If it appears to be a duplicate (same date, similar amount, same ledgers), set 'verification.status' to 'Error' and 'verification.message' to 'DUPLICATE ENTRY DETECTED.'
+    8. STRICT NATURE OF BUSINESS CHECK: The business only sells groceries/FMCG (${stockItems}). If the items in the invoice belong to a completely different industry (e.g. industrial solvents, construction materials, jewelry, personal vacations, movie tickets), you MUST set 'verification.status' to 'Warning' and 'verification.message' to 'Potentially unrelated business expense. Invoice items do not match FMCG trading.'
     
     Output JSON format strictly matching the schema.
   `;
