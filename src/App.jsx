@@ -240,7 +240,10 @@ const App = () => {
                                     </button>
 
                                     <div className="flex flex-col md:flex-row md:items-center md:space-x-2">
-                                        <span className="font-bold tracking-wide uppercase text-xs hidden md:inline">QASO</span>
+                                        <div className="hidden md:flex items-center space-x-1.5">
+                                            <img src="/qaso-logo.png" alt="QASO Logo" className="h-6 w-6 object-contain rounded-sm" />
+                                            <span className="font-bold tracking-wide uppercase text-xs">QASO</span>
+                                        </div>
                                         <span className="text-blue-200 dark:text-gray-500 hidden md:inline">|</span>
                                         <span className="text-xs font-bold md:font-normal">{getHeaderTitle()}</span>
                                     </div>

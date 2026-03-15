@@ -67,6 +67,7 @@ const Signup = ({ onSignup }) => {
 
             {/* Header matching App.jsx */}
             <header className="h-10 md:h-8 bg-[#005a9e] dark:bg-[#1E1E1E] text-white flex items-center px-3 select-none shrink-0 border-b border-[#004a8e] dark:border-accounting-dark-border transition-colors">
+                <img src="/qaso-logo.png" alt="QASO Logo" className="h-7 w-7 object-contain rounded-sm mr-2" />
                 <span className="font-bold tracking-wide uppercase text-xs">QASO</span>
                 <span className="text-blue-200 dark:text-gray-500 mx-2">|</span>
                 <span className="text-xs">Company Initialization</span>
