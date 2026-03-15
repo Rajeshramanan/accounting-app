@@ -11,7 +11,9 @@ const AdminDashboard = ({ onLogout }) => {
 
     const fetchUsers = async () => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/admin/users`);
+            // Use relative path for Vercel, fallback to localhost for dev if env var isn't set
+            const apiUrl = import.meta.env.VITE_API_URL || '';
+            const response = await fetch(`${apiUrl}/api/auth/admin/users`);
             const data = await response.json();
             
             if (!response.ok) throw new Error(data.message || 'Failed to fetch users');

@@ -14,7 +14,9 @@ const AdminLogin = ({ onLogin }) => {
         e.preventDefault();
         setIsLoading(true);
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/admin-login`, {
+            // Use relative path for Vercel, fallback to localhost for dev if env var isn't set
+            const apiUrl = import.meta.env.VITE_API_URL || '';
+            const response = await fetch(`${apiUrl}/api/auth/admin-login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(credentials),
