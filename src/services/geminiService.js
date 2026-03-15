@@ -7,9 +7,15 @@ export const analyzeTransaction = async (inputText, ledgers, stock, imagePart, r
     const ledgerNames = ledgers.map(l => l.name).join(", ");
     const stockItems = stock.map(s => `${s.name} (${s.unit}) @ ${s.rate}`).join(", ");
     
-    // Format recent vouchers for context
+    // Format recent vouchers for context. Note: saved vouchers have a flattened structure compared to Gemini output.
     const recentVouchersContext = recentVouchers.length > 0 
-        ? recentVouchers.map(v => `- [${v.voucherData.date} / ${v.voucherData.type}] ${v.voucherData.entries.map(e => `${e.type} ${e.ledgerName} ${e.amount}`).join(", ")} | Narration: ${v.voucherData.narration}`).join("\n    ")
+        ? recentVouchers.map(v => {
+            const date = v?.date || v?.voucherData?.date || 'Unknown Date';
+            const type = v?.type || v?.voucherData?.type || 'Unknown Type';
+            const entries = v?.entries || v?.voucherData?.entries || [];
+            const narration = v?.narration || v?.voucherData?.narration || 'No Narration';
+            return `- [${date} / ${type}] ${entries.map(e => `${e.type} ${e.ledgerName} ${e.amount}`).join(", ")} | Narration: ${narration}`;
+        }).join("\n    ")
         : "None";
 
     const systemPrompt = `
