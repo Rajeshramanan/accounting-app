@@ -40,7 +40,11 @@ const AIEntry = ({ ledgers, stock, onSaveVoucher }) => {
         setAnalysis(null);
         try {
             const imagePart = selectedImage ? { inlineData: selectedImage } : undefined;
-            const result = await analyzeTransaction(input, ledgers, stock, imagePart);
+            // Fetch the last 5 vouchers to check for duplicates
+            const recentVouchersStr = localStorage.getItem('accusim_vouchers');
+            const recentVouchers = recentVouchersStr ? JSON.parse(recentVouchersStr).slice(0, 5) : [];
+            
+            const result = await analyzeTransaction(input, ledgers, stock, imagePart, recentVouchers);
             setAnalysis(result);
         }
         catch (err) {

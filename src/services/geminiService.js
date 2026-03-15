@@ -3,9 +3,15 @@ import { GoogleGenAI, Type } from "@google/genai";
 // process.env will cause the app to crash.
 const apiKey = import.meta.env.VITE_API_KEY;
 const ai = new GoogleGenAI({ apiKey: apiKey || '' });
-export const analyzeTransaction = async (inputText, ledgers, stock, imagePart) => {
+export const analyzeTransaction = async (inputText, ledgers, stock, imagePart, recentVouchers = []) => {
     const ledgerNames = ledgers.map(l => l.name).join(", ");
     const stockItems = stock.map(s => `${s.name} (${s.unit}) @ ${s.rate}`).join(", ");
+    
+    // Format recent vouchers for context
+    const recentVouchersContext = recentVouchers.length > 0 
+        ? recentVouchers.map(v => `- [${v.voucherData.date} / ${v.voucherData.type}] ${v.voucherData.entries.map(e => `${e.type} ${e.ledgerName} ${e.amount}`).join(", ")} | Narration: ${v.voucherData.narration}`).join("\n    ")
+        : "None";
+
     const systemPrompt = `
     You are an advanced AI Accounting Engine for 'RS Traders & Co'.
     Your role is to simulate a Chartered Accountant and Tally Expert.
@@ -14,6 +20,8 @@ export const analyzeTransaction = async (inputText, ledgers, stock, imagePart) =
     - Branches: Head Office – Coimbatore, Branch Office – Tiruppur
     - Available Ledgers: ${ledgerNames}
     - Available Stock: ${stockItems}
+    - Recently Saved Transactions (for duplicate detection):
+    ${recentVouchersContext}
     
     Task:
     Analyze the user provided transaction text (receipt/invoice/note) and/or image.
@@ -23,6 +31,7 @@ export const analyzeTransaction = async (inputText, ledgers, stock, imagePart) =
     4. Determine Debit/Credit logic based on Double Entry System.
     5. Classify B2B (if GST/Company mentioned) vs B2C.
     6. Verify for errors (e.g., negative stock, mismatched amounts).
+    7. CHECK FOR POTENTIAL DUPLICATES: Compare the extracted transaction against the 'Recently Saved Transactions'. If it appears to be a duplicate (same date, similar amount, same ledgers, same narration intent), set 'verification.status' to 'Warning' and 'verification.message' to 'Potential Duplicate Entry detected based on recent vouchers.'
     
     Output JSON format strictly matching the schema.
   `;
@@ -85,8 +94,8 @@ export const analyzeTransaction = async (inputText, ledgers, stock, imagePart) =
         else if (imagePart) {
             parts.push({ text: "Analyze this image receipt/invoice and extract accounting details." });
         }
-        // Use gemini-3-pro-preview if image is present for better multimodal understanding
-        const model = imagePart ? 'gemini-3-pro-preview' : 'gemini-2.5-flash';
+        // Use gemini-2.5-flash for both text and image as it supports multimodal and has a better free tier quota.
+        const model = 'gemini-2.5-flash';
         const response = await ai.models.generateContent({
             model,
             contents: { parts },
@@ -103,6 +112,6 @@ export const analyzeTransaction = async (inputText, ledgers, stock, imagePart) =
     }
     catch (error) {
         console.error("Gemini Analysis Error:", error);
-        throw new Error("Failed to process transaction with AI.");
+        throw new Error(`Failed to process transaction with AI: ${error.message || error}`);
     }
 };
