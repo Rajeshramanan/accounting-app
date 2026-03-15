@@ -34,7 +34,7 @@ export const analyzeTransaction = async (inputText, ledgers, stock, imagePart, r
     Analyze the user provided transaction text (receipt/invoice/note) and/or image.
     1. Extract Date, Amount, Product, Quantity, Tax.
     2. Identify the Voucher Type (Sales, Purchase, Payment, Receipt, Contra, Journal).
-    3. Match with existing ledgers strictly. If a specific customer/vendor name is used, map it to 'Accounts Receivable' or 'Accounts Payable'.
+    3. Match with existing ledgers strictly. If a specific customer/vendor name is used, map it to 'Accounts Receivable' or 'Accounts Payable' and place the specific party name in the 'entries[].details' field. For Sales/Purchase ledgers, list the specific products in the 'entries[].details' field.
     4. Determine Debit/Credit logic based on Double Entry System.
     5. Classify B2B (if GST/Company mentioned) vs B2C.
     6. Verify for errors (e.g., negative stock, mismatched amounts).
@@ -59,6 +59,7 @@ export const analyzeTransaction = async (inputText, ledgers, stock, imagePart, r
                             type: Type.OBJECT,
                             properties: {
                                 ledgerName: { type: Type.STRING, description: "Must match one of the available ledgers provided in context exactly." },
+                                details: { type: Type.STRING, description: "Additional details to display below the ledger name in the UI, such as the specific Party Name (for AP/AR) or Product Items sold/purchased." },
                                 amount: { type: Type.NUMBER },
                                 type: { type: Type.STRING, enum: ["Dr", "Cr"] }
                             },

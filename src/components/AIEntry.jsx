@@ -159,6 +159,7 @@ const AIEntry = ({ ledgers, stock, onSaveVoucher }) => {
                                         <span className="font-bold italic mr-2 w-6 shrink-0 text-right">{entry.type === 'Dr' ? 'By' : 'To'}</span>
                                         <div>
                                             <div className="font-bold text-base">{entry.ledgerName}</div>
+                                            {entry.details && <div className="text-[11px] text-[#00008b] dark:text-blue-300 italic whitespace-pre-wrap leading-tight mt-0.5">{entry.details}</div>}
                                             <div className="text-[11px] text-gray-600 dark:text-gray-400 italic">Cur Bal: 0.00 {entry.type}</div>
                                         </div>
                                     </div>
