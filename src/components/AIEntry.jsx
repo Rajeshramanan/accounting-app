@@ -96,101 +96,106 @@ const AIEntry = ({ ledgers, stock, onSaveVoucher }) => {
         {error && <div className="text-red-600 dark:text-red-400 text-xs mt-1 font-bold">Error: {error}</div>}
       </div>
 
-      {/* Voucher View Section - Accounting Grid */}
-      {analysis && (<div className="flex-1 bg-white dark:bg-accounting-dark-panel border border-gray-500 dark:border-accounting-dark-border flex flex-col overflow-hidden">
+      {/* Classic Tally ERP Voucher View Section */}
+      {analysis && (<div className="flex-1 bg-[#FFFFE6] dark:bg-[#1a1a14] flex flex-col overflow-hidden border-2 border-[#005a3c] dark:border-[#008a5c] shadow-lg text-black dark:text-[#E0E0E0] font-sans">
           
-          {/* Header Fields - Stack on Mobile */}
-          <div className="bg-[#e0e0e0] dark:bg-accounting-dark-header p-2 border-b border-gray-500 dark:border-accounting-dark-border grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 text-xs shrink-0">
-             <div>
-                <label className="block text-gray-600 dark:text-accounting-dark-muted font-bold mb-0.5">Voucher Type</label>
-                <div className="bg-white dark:bg-[#1E1E1E] border border-gray-400 dark:border-accounting-dark-border px-1 py-0.5 font-bold uppercase text-black dark:text-accounting-dark-text">{analysis.voucherData.type}</div>
-             </div>
-             <div>
-                <label className="block text-gray-600 dark:text-accounting-dark-muted font-bold mb-0.5">Date</label>
-                <div className="bg-white dark:bg-[#1E1E1E] border border-gray-400 dark:border-accounting-dark-border px-1 py-0.5 font-mono text-black dark:text-accounting-dark-text">{analysis.voucherData.date}</div>
-             </div>
-             <div>
-                <label className="block text-gray-600 dark:text-accounting-dark-muted font-bold mb-0.5">Branch</label>
-                <div className="bg-white dark:bg-[#1E1E1E] border border-gray-400 dark:border-accounting-dark-border px-1 py-0.5 truncate text-black dark:text-accounting-dark-text">{analysis.voucherData.branch}</div>
-             </div>
-             <div>
-                <label className="block text-gray-600 dark:text-accounting-dark-muted font-bold mb-0.5">Status</label>
-                <div className={`px-1 py-0.5 font-bold text-center border ${
-                    analysis.verification.status === 'Verified' ? 'bg-green-100 dark:bg-green-900/30 border-green-500 dark:border-green-600 text-green-800 dark:text-green-300' 
-                    : analysis.verification.status === 'Error' ? 'bg-red-100 dark:bg-red-900/30 border-red-500 dark:border-red-600 text-red-800 dark:text-red-300' 
-                    : 'bg-yellow-100 dark:bg-yellow-900/30 border-yellow-500 dark:border-yellow-600 text-yellow-800 dark:text-yellow-300'
-                }`}>
-                    {analysis.verification.status}
-                </div>
-             </div>
+          {/* Tally Header Bar */}
+          <div className="bg-[#005a3c] dark:bg-[#004a2c] text-white flex justify-between px-2 py-0.5 text-sm shrink-0 items-center">
+              <span className="font-semibold italic">Accounting Voucher Creation</span>
+              <span className="font-bold hidden md:inline">RS Traders & Co</span>
+              <div className="flex space-x-2 text-xs items-center">
+                  <span className="hidden md:inline">Ctrl + M</span>
+                  <button onClick={() => setAnalysis(null)} className="opacity-80 hover:opacity-100 font-bold border border-white px-1">X</button>
+              </div>
           </div>
 
-          {/* Grid - Scrollable on Mobile */}
-          <div className="flex-1 overflow-auto bg-white dark:bg-accounting-dark-panel relative">
-                <div className="min-w-max md:min-w-0">
-                    <table className="w-full text-xs border-collapse">
-                        <thead className="bg-[#f0f0f0] dark:bg-[#252525] border-b border-gray-500 dark:border-accounting-dark-border sticky top-0">
-                            <tr>
-                                <th className="border-r border-gray-400 dark:border-accounting-dark-border px-2 py-1 text-left w-12 text-black dark:text-accounting-dark-text">D/C</th>
-                                <th className="border-r border-gray-400 dark:border-accounting-dark-border px-2 py-1 text-left text-black dark:text-accounting-dark-text">Particulars</th>
-                                <th className="border-r border-gray-400 dark:border-accounting-dark-border px-2 py-1 text-right w-24 md:w-32 text-black dark:text-accounting-dark-text">Debit</th>
-                                <th className="px-2 py-1 text-right w-24 md:w-32 text-black dark:text-accounting-dark-text">Credit</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {analysis.voucherData.entries.map((entry, idx) => (<tr key={idx} className="border-b border-gray-200 dark:border-accounting-dark-border">
-                                    <td className="border-r border-gray-400 dark:border-accounting-dark-border px-2 py-1 font-bold text-gray-600 dark:text-accounting-dark-muted">
-                                        {entry.type === 'Dr' ? 'Dr' : 'Cr'}
-                                    </td>
-                                    <td className="border-r border-gray-400 dark:border-accounting-dark-border px-2 py-1">
-                                        <span className="font-bold text-black dark:text-accounting-dark-text">{entry.ledgerName}</span>
-                                    </td>
-                                    <td className="border-r border-gray-400 dark:border-accounting-dark-border px-2 py-1 text-right font-mono text-black dark:text-accounting-dark-text">
-                                        {entry.type === 'Dr' ? entry.amount.toFixed(2) : ''}
-                                    </td>
-                                    <td className="px-2 py-1 text-right font-mono text-black dark:text-accounting-dark-text">
-                                        {entry.type === 'Cr' ? entry.amount.toFixed(2) : ''}
-                                    </td>
-                                </tr>))}
-                        </tbody>
-                        <tfoot className="bg-[#e0e0e0] dark:bg-accounting-dark-header font-bold border-t border-gray-500 dark:border-accounting-dark-border sticky bottom-0 text-black dark:text-accounting-dark-text">
-                            <tr>
-                                <td colSpan={2} className="border-r border-gray-400 dark:border-accounting-dark-border px-2 py-1 text-right">Totals:</td>
-                                <td className="border-r border-gray-400 dark:border-accounting-dark-border px-2 py-1 text-right font-mono">
-                                    {analysis.voucherData.entries.filter(e => e.type === 'Dr').reduce((s, e) => s + e.amount, 0).toFixed(2)}
-                                </td>
-                                <td className="px-2 py-1 text-right font-mono">
-                                    {analysis.voucherData.entries.filter(e => e.type === 'Cr').reduce((s, e) => s + e.amount, 0).toFixed(2)}
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
+          {/* Sub Header (Voucher Type & Date) */}
+          <div className="flex justify-between items-start p-2 shrink-0 relative">
+              <div className="flex items-center">
+                  <div className={`text-white font-bold px-4 py-1 flex items-center justify-center min-w-[120px] shadow-sm ${
+                      analysis.voucherData.type === 'Payment' ? 'bg-[#c23636]' :
+                      analysis.voucherData.type === 'Receipt' ? 'bg-[#e5a93e] text-black' :
+                      analysis.voucherData.type === 'Sales' ? 'bg-[#5ea85e]' :
+                      analysis.voucherData.type === 'Purchase' ? 'bg-[#5e9ca8]' :
+                      analysis.voucherData.type === 'Contra' ? 'bg-white text-black border border-gray-400' :
+                      'bg-[#c28436]' // Journal
+                  }`}>
+                      {analysis.voucherData.type}
+                  </div>
+                  <span className="ml-2 font-bold text-sm">No. <span className="text-red-700 dark:text-red-400">New</span></span>
+              </div>
+              <div className="text-right leading-tight">
+                  <div className="font-bold text-sm">{analysis.voucherData.date}</div>
+                  <div className="text-xs text-gray-700 dark:text-gray-400">{new Date(analysis.voucherData.date).toLocaleDateString('en-US', { weekday: 'long' })}</div>
+              </div>
           </div>
 
-          {/* Footer Info */}
-          <div className="bg-[#f0f0f0] dark:bg-accounting-dark-header p-2 border-t border-gray-500 dark:border-accounting-dark-border text-xs shrink-0">
-                <div className="mb-2">
-                    <label className="font-bold text-black dark:text-accounting-dark-text mr-2">Narration:</label>
-                    <span className="font-mono text-black dark:text-accounting-dark-text italic bg-white dark:bg-[#1E1E1E] border-b border-gray-400 dark:border-accounting-dark-border px-1 inline-block w-full md:w-auto md:min-w-[300px]">
+          {/* AI Verification Badge */}
+          <div className="px-2 pb-1 shrink-0 text-xs">
+                 <div className={`px-2 py-1 font-bold border inline-block ${
+                    analysis.verification.status === 'Verified' ? 'bg-green-100 border-green-500 text-green-800' 
+                    : analysis.verification.status === 'Error' ? 'bg-red-100 border-red-500 text-red-800' 
+                    : 'bg-yellow-100 border-yellow-500 text-yellow-800'
+                 }`}>
+                    {analysis.verification.status}: {analysis.verification.message}
+                 </div>
+          </div>
+
+          {/* Grid - Particulars and Amount */}
+          <div className="flex-1 overflow-auto flex flex-col relative mx-2">
+                <table className="w-full text-sm border-t-2 border-b-2 border-black dark:border-gray-500 border-collapse">
+                    <thead className="border-b-2 border-black dark:border-gray-500">
+                        <tr>
+                            <th className="px-2 py-1 text-left font-bold w-3/4">Particulars</th>
+                            <th className="px-2 py-1 text-right font-bold w-1/4">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {analysis.voucherData.entries.map((entry, idx) => (<tr key={idx}>
+                                <td className="px-2 py-2 border-r border-[#e0e0e0] dark:border-[#333]">
+                                    <div className="flex">
+                                        <span className="font-bold italic mr-2 w-6 shrink-0 text-right">{entry.type === 'Dr' ? 'By' : 'To'}</span>
+                                        <div>
+                                            <div className="font-bold text-base">{entry.ledgerName}</div>
+                                            <div className="text-[11px] text-gray-600 dark:text-gray-400 italic">Cur Bal: 0.00 {entry.type}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td className="px-2 py-2 text-right font-bold align-top pt-3">
+                                    {entry.amount.toFixed(2)} <span className="text-xs font-normal ml-1">{entry.type}</span>
+                                </td>
+                            </tr>))}
+                    </tbody>
+                </table>
+          </div>
+
+          {/* Footer Info (Narration & Totals) */}
+          <div className="shrink-0 flex items-end justify-between px-2 pt-1 pb-2 min-h-[60px]">
+                <div className="flex-1 mr-4 flex items-start text-sm">
+                    <span className="mr-2 mt-1 whitespace-nowrap">Narration:</span>
+                    <div className="flex-1 font-mono italic mt-1 pb-1 px-1 min-h-[24px]">
                         {analysis.voucherData.narration}
-                    </span>
+                    </div>
                 </div>
-                
-                <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-900/50 p-1 text-[11px] mb-2 text-black dark:text-accounting-dark-text">
-                    <span className="font-bold">System Note:</span> {analysis.explanation} [{analysis.classification}]
-                </div>
-
-                <div className="flex justify-end gap-2">
-                    <button onClick={() => setAnalysis(null)} className="px-4 py-2 md:py-1 border border-gray-500 dark:border-accounting-dark-border bg-[#e0e0e0] dark:bg-[#333] hover:bg-[#d0d0d0] dark:hover:bg-[#444] text-black dark:text-accounting-dark-text rounded md:rounded-none">
-                        Quit (Esc)
-                    </button>
-                    <button onClick={handleSave} className="px-4 py-2 md:py-1 bg-[#2d3748] dark:bg-[#181818] text-white font-bold border border-black dark:border-accounting-dark-border hover:bg-black dark:hover:bg-[#000] rounded md:rounded-none">
-                        Accept (Enter)
-                    </button>
+                <div className="w-32 md:w-48 text-right bg-[#666666] dark:bg-[#444] text-white px-2 py-1 font-bold text-sm shrink-0 border border-gray-400 shadow-inner">
+                    {analysis.voucherData.entries.filter(e => e.type === 'Dr').reduce((s, e) => s + e.amount, 0).toFixed(2)}
                 </div>
           </div>
 
+          {/* Action Bar */}
+          <div className="bg-[#2d3748] dark:bg-[#121212] p-2 flex justify-between items-center shrink-0 border-t border-black">
+               <div className="text-[10px] text-gray-400 hidden md:block">
+                   System Note: {analysis.explanation} [{analysis.classification}]
+               </div>
+               <div className="flex gap-2 w-full md:w-auto justify-end">
+                   <button onClick={() => setAnalysis(null)} className="px-4 py-1.5 border border-gray-400 text-white hover:bg-[#4a5568] text-sm">
+                       Quit (Esc)
+                   </button>
+                   <button onClick={handleSave} className="px-6 py-1.5 bg-[#fbbf24] text-black font-bold hover:bg-[#f59e0b] shadow-md text-sm">
+                       Accept (Enter)
+                   </button>
+               </div>
+          </div>
         </div>)}
     </div>);
 };
