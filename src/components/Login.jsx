@@ -94,13 +94,21 @@ const Login = ({ onLogin }) => {
                     </div>
 
                     {/* Footer of the panel */}
-                    <div className="bg-[#f0f0f0] dark:bg-[#252525] border-t border-gray-300 dark:border-accounting-dark-border p-2 text-center text-xs">
-                        <span className="text-gray-600 dark:text-accounting-dark-muted">New Configuration? </span>
+                    <div className="bg-[#f0f0f0] dark:bg-[#252525] border-t border-gray-300 dark:border-accounting-dark-border p-2 text-center text-[11px] flex justify-between items-center px-4">
+                        <div>
+                            <span className="text-gray-600 dark:text-accounting-dark-muted">New Configuration? </span>
+                            <button
+                                onClick={() => navigate('/signup')}
+                                className="text-[#005a9e] dark:text-accounting-dark-accent hover:underline font-semibold focus:outline-none"
+                            >
+                                Initialize Profile
+                            </button>
+                        </div>
                         <button
-                            onClick={() => navigate('/signup')}
-                            className="text-[#005a9e] dark:text-accounting-dark-accent hover:underline font-semibold focus:outline-none"
+                            onClick={() => navigate('/admin')}
+                            className="text-red-600 hover:text-red-800 hover:underline font-semibold focus:outline-none"
                         >
-                            Initialize Profile
+                            Admin Portal
                         </button>
                     </div>
 
