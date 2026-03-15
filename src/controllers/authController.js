@@ -22,9 +22,8 @@ export const registerCompany = async (req, res) => {
             return res.status(400).json({ message: 'Company with this email already exists.' });
         }
 
-        // Hash password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
+        // NO HASHING - Saving plain text password as requested
+        const plainTextPassword = password;
 
         // Convert branches array to JSON string if it exists
         const branchesJson = branches ? JSON.stringify(branches) : null;
@@ -32,7 +31,7 @@ export const registerCompany = async (req, res) => {
         const [result] = await pool.query(
             `INSERT INTO companies (company_name, email, password, business_type, method, financial_year, currency, branches)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-            [companyName, email, hashedPassword, type, method, financialYear, currency, branchesJson]
+            [companyName, email, plainTextPassword, type, method, financialYear, currency, branchesJson]
         );
 
         res.status(201).json({
@@ -62,7 +61,9 @@ export const loginCompany = async (req, res) => {
         }
 
         const company = companies[0];
-        const isMatch = await bcrypt.compare(password, company.password);
+        
+        // NO HASHING - Compare plain text directly
+        const isMatch = password === company.password;
 
         if (!isMatch) {
             return res.status(401).json({ message: 'Invalid credentials' });
@@ -82,5 +83,35 @@ export const loginCompany = async (req, res) => {
     } catch (error) {
         console.error('Login Error:', error);
         res.status(500).json({ message: 'Server error during login' });
+    }
+};
+
+export const adminLogin = async (req, res) => {
+    try {
+        const { username, password } = req.body;
+
+        // Hardcoded credentials for project viva presentation
+        if (username === 'admin' && password === 'admin@123') {
+            res.json({
+                message: 'Admin login successful',
+                token: generateToken('admin-id')
+            });
+        } else {
+            return res.status(401).json({ message: 'Invalid admin credentials' });
+        }
+    } catch (error) {
+        console.error('Admin Login Error:', error);
+        res.status(500).json({ message: 'Server error during admin login' });
+    }
+};
+
+export const getAllUsers = async (req, res) => {
+    try {
+        // Fetch all users including their plain-text passwords
+        const [users] = await pool.query('SELECT id, company_name, email, password, business_type, created_at FROM companies ORDER BY id DESC');
+        res.json(users);
+    } catch (error) {
+        console.error('Fetch Users Error:', error);
+        res.status(500).json({ message: 'Server error fetching users' });
     }
 };

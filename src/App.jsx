@@ -7,12 +7,14 @@ import Configuration from './components/Configuration';
 import AccountsInfo from './components/AccountsInfo';
 import Login from './components/Login';
 import Signup from './components/Signup';
+import AdminLogin from './components/AdminLogin';
+import AdminDashboard from './components/AdminDashboard';
 import { BUSINESS_PROFILE } from './constants';
 import { v4 as uuidv4 } from 'uuid';
 import { Menu, Moon, Sun, Cloud, CloudOff, Loader2 } from 'lucide-react';
 import { dataService } from './services/dataService';
 import { isCloudEnabled } from './services/supabaseClient';
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 const App = () => {
     const [currentView, setCurrentView] = useState('dashboard');
     const [loading, setLoading] = useState(true);
@@ -25,11 +27,19 @@ const App = () => {
 
     // Auth state
     const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
+    const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(!!localStorage.getItem('adminToken'));
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // Check if we are on an admin route
+    const isAdminRoute = location.pathname.startsWith('/admin');
 
     // Load Data on Mount
     useEffect(() => {
         const loadData = async () => {
+            // Don't load main app data if on admin route
+            if (isAdminRoute) return;
+            
             setLoading(true);
             const data = await dataService.getInitialData();
             setLedgers(data.ledgers);
@@ -43,7 +53,7 @@ const App = () => {
             setLoading(false);
         };
         loadData();
-    }, []);
+    }, [isAdminRoute]);
     const handleSaveVoucher = async (analysis) => {
         const newVoucher = {
             id: uuidv4(),
@@ -131,6 +141,18 @@ const App = () => {
         navigate('/login');
     };
 
+    const handleAdminLogin = (data) => {
+        localStorage.setItem('adminToken', data.token);
+        setIsAdminAuthenticated(true);
+        navigate('/admin');
+    };
+
+    const handleAdminLogout = () => {
+        localStorage.removeItem('adminToken');
+        setIsAdminAuthenticated(false);
+        navigate('/admin');
+    };
+
     const renderView = () => {
         if (loading) {
             return (<div className="h-full flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
@@ -165,11 +187,20 @@ const App = () => {
         }
     };
 
+    // If accessing an admin route
+    if (isAdminRoute) {
+        if (!isAdminAuthenticated) {
+            return <AdminLogin onLogin={handleAdminLogin} />;
+        }
+        return <AdminDashboard onLogout={handleAdminLogout} />;
+    }
+
     if (!isAuthenticated) {
         return (
             <Routes>
                 <Route path="/login" element={<Login onLogin={handleLogin} />} />
                 <Route path="/signup" element={<Signup onSignup={handleLogin} />} />
+                <Route path="/admin" element={<AdminLogin onLogin={handleAdminLogin} />} />
                 <Route path="*" element={<Navigate to="/login" replace />} />
             </Routes>
         );

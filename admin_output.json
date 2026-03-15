@@ -1,0 +1,13 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "company_name": "RR industries",
+      "email": "rajesh02112005@gmail.com",
+      "password": "password123",
+      "business_type": "Retail service",
+      "created_at": "2026-02-22T20:01:31.000Z"
+    }
+  ],
+  "message": "Passwords are now saved in plain text."
+}
