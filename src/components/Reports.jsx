@@ -5,12 +5,25 @@ const TableHeader = ({ children }) => (<th className="px-2 py-1 border border-gr
 const TableCell = ({ children, className, align = 'left' }) => (<td className={`px-2 py-0.5 border border-gray-400 dark:border-accounting-dark-border text-xs text-black dark:text-accounting-dark-text whitespace-nowrap ${align === 'right' ? 'text-right font-mono' : ''} ${className || ''}`}>
     {children}
   </td>);
-const Reports = ({ view, vouchers, ledgers, stock }) => {
+const Reports = ({ view, vouchers, ledgers, stock, onClearData }) => {
     const [viewImage, setViewImage] = useState(null);
 
     const DayBook = () => (<div className="p-2 h-full flex flex-col relative">
-        <div className="mb-2 text-xs font-bold text-black dark:text-accounting-dark-text uppercase border-b border-black dark:border-accounting-dark-border pb-1 shrink-0">
-            Day Book Register [1-Apr-2024 to 31-Mar-2025]
+        <div className="mb-2 flex justify-between items-center border-b border-black dark:border-accounting-dark-border pb-1 shrink-0">
+            <span className="text-xs font-bold text-black dark:text-accounting-dark-text uppercase">Day Book Register [1-Apr-2024 to 31-Mar-2025]</span>
+            {onClearData && (
+                <button 
+                    onClick={() => {
+                        if (window.confirm("VIVA MODE: Are you sure you want to delete ALL vouchers and reset ledger balances? This cannot be undone.")) {
+                            onClearData();
+                        }
+                    }}
+                    className="text-[10px] bg-red-600 hover:bg-red-700 text-white font-bold px-2 py-1 rounded"
+                    title="Clear all data for Viva demonstration"
+                >
+                    Clear All Data
+                </button>
+            )}
         </div>
         <div className="flex-1 overflow-auto border border-gray-500 dark:border-accounting-dark-border bg-white dark:bg-accounting-dark-panel">
             <div className="min-w-max">

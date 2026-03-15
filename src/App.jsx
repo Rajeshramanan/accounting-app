@@ -155,6 +155,16 @@ const App = () => {
         navigate('/admin');
     };
 
+    const handleClearData = async () => {
+        setLoading(true);
+        await dataService.clearAllData();
+        const data = await dataService.getInitialData();
+        setLedgers(data.ledgers);
+        setStock(data.stock);
+        setVouchers(data.vouchers);
+        setLoading(false);
+    };
+
     const renderView = () => {
         if (loading) {
             return (<div className="h-full flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
@@ -168,7 +178,7 @@ const App = () => {
             case 'daybook':
             case 'inventory':
             case 'reports':
-                return <Reports view={currentView} vouchers={vouchers} ledgers={ledgers} stock={stock} />;
+                return <Reports view={currentView} vouchers={vouchers} ledgers={ledgers} stock={stock} onClearData={handleClearData} />;
             case 'accounts':
                 return <AccountsInfo ledgers={ledgers} onUpdateLedger={handleUpdateLedger} />;
             case 'config':

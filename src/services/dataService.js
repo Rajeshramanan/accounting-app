@@ -108,6 +108,32 @@ export const dataService = {
             }
         }
     },
+    async clearAllData() {
+        // Clear local storage (except profile to keep settings)
+        localStorage.removeItem(LS_KEYS.VOUCHERS);
+        localStorage.setItem(LS_KEYS.LEDGERS, JSON.stringify(INITIAL_LEDGERS));
+        localStorage.setItem(LS_KEYS.STOCK, JSON.stringify(INITIAL_STOCK));
+
+        // Clear cloud data
+        if (isCloudEnabled && supabase) {
+            try {
+                // Delete all vouchers
+                await supabase.from('vouchers').delete().neq('id', '0');
+                
+                // Reset all ledgers to initial state
+                for (const l of INITIAL_LEDGERS) {
+                    await supabase.from('ledgers').upsert({ id: l.id, data: l });
+                }
+                
+                // Reset all stock to initial state
+                for (const s of INITIAL_STOCK) {
+                    await supabase.from('stock').upsert({ id: s.id, data: s });
+                }
+            } catch (e) {
+                console.error("Failed to clear cloud data", e);
+            }
+        }
+    },
     // Helpers
     getLocalVouchers() {
         const v = localStorage.getItem(LS_KEYS.VOUCHERS);
