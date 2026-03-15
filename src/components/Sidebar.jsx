@@ -5,6 +5,7 @@ const Sidebar = ({ currentView, onChangeView, isOpen, onClose }) => {
         { id: 'dashboard', label: 'Dashboard' },
         { id: 'accounts', label: 'Accounts Info' },
         { id: 'vouchers', label: 'Voucher Entry' },
+        { id: 'daybook', label: 'Day Book' },
         { id: 'inventory', label: 'Inventory Info' },
         { id: 'reports', label: 'Reports' },
         { id: 'config', label: 'Configuration' },
